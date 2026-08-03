@@ -1,18 +1,25 @@
-from datetime import datetime
-
-from sqlalchemy import Boolean, DateTime, Integer, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+book_authors = Table(
+    "book_authors",
+    Base.metadata,
+    Column("book_id", ForeignKey("books.id", ondelete="CASCADE"), primary_key=True),
+    Column("author_id", ForeignKey("authors.id", ondelete="CASCADE"), primary_key=True, index=True),
+)
 
 
 class Book(Base):
     __tablename__ = "books"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title: Mapped[str] = mapped_column(String(255), nullable=False)
-    author: Mapped[str] = mapped_column(String(255), nullable=False)
-    isbn: Mapped[str] = mapped_column(String(13), unique=True, index=True)
-    published_year: Mapped[int] = mapped_column(Integer, nullable=True)
-    available: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    title: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    publication_year: Mapped[int] = mapped_column(Integer, nullable=False)
+    genre: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+
+    authors: Mapped[list["Author"]] = relationship(  # noqa: F821
+        "Author", secondary=book_authors, back_populates="books"
+    )
+    copies: Mapped[list["Copy"]] = relationship("Copy", back_populates="book")  # noqa: F821
