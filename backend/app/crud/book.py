@@ -1,34 +1,42 @@
-from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session, selectinload
 
+from app.models.author import Author
 from app.models.book import Book
-from app.schemas.book import BookCreate, BookUpdate
+from app.models.copy import Copy, CopyStatus
+
+
+def _count_available(book: Book) -> int:
+    return sum(1 for copy in book.copies if copy.status == CopyStatus.AVAILABLE)
+
+
+def search_books(
+    db: Session,
+    title: str | None = None,
+    genre: str | None = None,
+    author: str | None = None,
+    available: bool | None = None,
+) -> list[tuple[Book, int]]:
+    query = select(Book).options(selectinload(Book.authors), selectinload(Book.copies))
+
+    if title:
+        query = query.where(Book.title.ilike(f"%{title}%"))
+    if genre:
+        query = query.where(func.lower(Book.genre) == genre.lower())
+    if author:
+        query = query.where(Book.authors.any(Author.name.ilike(f"%{author}%")))
+    if available is not None:
+        has_available_copy = Book.copies.any(Copy.status == CopyStatus.AVAILABLE)
+        query = query.where(has_available_copy if available else ~has_available_copy)
+
+    books = list(db.scalars(query.order_by(Book.title)))
+    return [(book, _count_available(book)) for book in books]
 
 
 def get_book(db: Session, book_id: int) -> Book | None:
-    return db.get(Book, book_id)
-
-
-def get_books(db: Session, skip: int = 0, limit: int = 100) -> list[Book]:
-    return list(db.scalars(select(Book).offset(skip).limit(limit)))
-
-
-def create_book(db: Session, book_in: BookCreate) -> Book:
-    book = Book(**book_in.model_dump())
-    db.add(book)
-    db.commit()
-    db.refresh(book)
-    return book
-
-
-def update_book(db: Session, book: Book, book_in: BookUpdate) -> Book:
-    for field, value in book_in.model_dump(exclude_unset=True).items():
-        setattr(book, field, value)
-    db.commit()
-    db.refresh(book)
-    return book
-
-
-def delete_book(db: Session, book: Book) -> None:
-    db.delete(book)
-    db.commit()
+    query = (
+        select(Book)
+        .options(selectinload(Book.authors), selectinload(Book.copies))
+        .where(Book.id == book_id)
+    )
+    return db.scalars(query).first()

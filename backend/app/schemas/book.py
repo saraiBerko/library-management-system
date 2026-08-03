@@ -1,30 +1,26 @@
-from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict
 
-
-class BookBase(BaseModel):
-    title: str
-    author: str
-    isbn: str
-    published_year: int | None = None
-    available: bool = True
+from app.schemas.author import AuthorRead
+from app.schemas.copy import CopyRead
 
 
-class BookCreate(BookBase):
-    pass
-
-
-class BookUpdate(BaseModel):
-    title: str | None = None
-    author: str | None = None
-    isbn: str | None = None
-    published_year: int | None = None
-    available: bool | None = None
-
-
-class BookRead(BookBase):
+class BookSearchResult(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    created_at: datetime
+    title: str
+    publication_year: int
+    genre: str
+    authors: list[AuthorRead]
+    available_copies: int
+
+
+class BookDetail(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    publication_year: int
+    genre: str
+    authors: list[AuthorRead]
+    copies: list[CopyRead]

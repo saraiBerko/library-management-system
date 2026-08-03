@@ -30,3 +30,10 @@ class Loan(Base):
 
     member: Mapped["Member"] = relationship("Member", back_populates="loans")  # noqa: F821
     copy: Mapped["Copy"] = relationship("Copy", back_populates="loans")  # noqa: F821
+
+    @property
+    def book(self):
+        """Convenience accessor so LoanRead (schemas/loan.py) can read `.book`
+        directly via from_attributes, instead of every call site reaching
+        through `.copy.book`."""
+        return self.copy.book
