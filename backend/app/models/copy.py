@@ -24,6 +24,9 @@ class Copy(Base):
             name="copy_status",
             native_enum=False,
             validate_strings=True,
+            # Without this, SQLAlchemy persists the Python enum *member name*
+            # ("AVAILABLE") instead of its value ("available"), which then violates
+            # the migration's CHECK constraint (its values are lowercase).
             values_callable=lambda enum_cls: [member.value for member in enum_cls],
         ),
         nullable=False,
