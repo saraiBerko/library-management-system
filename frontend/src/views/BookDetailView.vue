@@ -41,7 +41,13 @@ function goToLoanForm() {
       <h3>Copies</h3>
       <CopyList :copies="booksStore.currentBook.copies" />
 
-      <button :disabled="!firstAvailableCopy" @click="goToLoanForm">Loan</button>
+      <button
+        :disabled="!firstAvailableCopy"
+        :title="!firstAvailableCopy ? 'No copies currently available' : undefined"
+        @click="goToLoanForm"
+      >
+        Loan
+      </button>
     </div>
   </section>
 </template>
