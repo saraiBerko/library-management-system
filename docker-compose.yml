@@ -20,6 +20,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/library
       CORS_ORIGINS: '["http://localhost:5173"]'
+      PORT: 8000
     ports:
       - "8000:8000"
     volumes:
