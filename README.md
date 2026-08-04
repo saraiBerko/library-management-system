@@ -10,6 +10,10 @@ Running the backend or frontend outside Docker is also possible, but needs Pytho
 
 ## Getting started
 
+```
+git clone https://github.com/saraiBerko/library-management-system.git && cd library-management-system
+```
+
 From the repository root:
 
 ```
