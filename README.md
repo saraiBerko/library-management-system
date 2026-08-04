@@ -29,6 +29,16 @@ Then open:
 - Frontend: http://localhost:5173
 - API: http://localhost:8000 (interactive docs at http://localhost:8000/docs)
 
+## Troubleshooting
+
+**`permission denied while trying to connect to the Docker daemon socket` (WSL/Linux)**: your user isn't in the `docker` group yet. Fix it with:
+
+```
+sudo usermod -aG docker $USER
+```
+
+Then close and reopen your WSL/terminal session (or run `newgrp docker`) so the group membership takes effect, and retry `docker compose up --build`.
+
 ## Seed data
 
 `docker compose exec backend python -m app.seed` inserts 10 books (13 authors, some books with multiple authors), 20 copies in a mix of `available`/`loaned`/`lost` statuses, 15 members (a few inactive), and 31 loans spanning roughly the last two years — a mix of returned, open, and overdue, so every screen and report has something to show. It's safe to re-run: it clears the 5 tables first, so running it again just resets to the same deterministic dataset.
