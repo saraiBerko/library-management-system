@@ -30,9 +30,10 @@ const pickedCopyId = defineModel('pickedCopyId', { default: '' })
 const pickedMemberId = defineModel('pickedMemberId', { default: '' })
 const dueDate = defineModel('dueDate', { default: '' })
 
-// The book picker's own selection is driven by the parent (it owns the fetch that
-// follows a change), so it's read from a prop and written via an emit rather than
-// a plain v-model.
+// Unlike pickedCopyId/pickedMemberId/dueDate above, this one isn't a defineModel:
+// changing the book has a side effect the parent must own (fetching that book's
+// detail so the copy dropdown can populate), so the value is read from a prop and
+// written via an emit instead of a plain two-way binding.
 const selectedBookId = computed({
   get: () => props.pickedBookId,
   set: (value) => emit('select-book', value),

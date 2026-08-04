@@ -7,7 +7,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', name: 'book-search', component: BookSearchView },
-    { path: '/books/:id', name: 'book-detail', component: BookDetailView, props: true },
+    { path: '/books/:id', name: 'book-detail', component: BookDetailView },
     { path: '/loans', name: 'loan-management', component: LoanManagementView },
   ],
 })

@@ -13,6 +13,11 @@ onMounted(() => {
   booksStore.fetchBook(route.params.id)
 })
 
+// Vue Router reuses this component instance when navigating between two
+// /books/:id routes, so onMounted alone wouldn't refetch. onBeforeRouteUpdate is
+// used instead of watch(() => route.params.id) because it can be awaited — the
+// navigation itself pauses until the new book has loaded, avoiding a frame where
+// the previous book's data is shown under the new URL.
 onBeforeRouteUpdate(async (to) => {
   await booksStore.fetchBook(to.params.id)
 })
