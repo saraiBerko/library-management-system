@@ -10,13 +10,12 @@ router = APIRouter(prefix="/books", tags=["books"])
 
 @router.get("", response_model=list[BookSearchResult])
 def search_books(
-    title: str | None = None,
+    q: str | None = None,
     genre: str | None = None,
-    author: str | None = None,
     available: bool | None = None,
     db: Session = Depends(get_db),
 ):
-    results = crud.book.search_books(db, title=title, genre=genre, author=author, available=available)
+    results = crud.book.search_books(db, q=q, genre=genre, available=available)
     return [
         BookSearchResult(
             id=book.id,

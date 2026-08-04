@@ -141,3 +141,26 @@ def test_overdue_report_includes_only_overdue_open_loans(client, db_session):
     results = response.json()
     assert len(results) == 1
     assert results[0]["copy_id"] == overdue_copy.id
+
+
+def test_list_loans_open_filter_excludes_returned(client, db_session):
+    member = _make_member(db_session)
+    open_copy = _make_copy(db_session, CopyStatus.AVAILABLE)
+    returned_copy = _make_copy(db_session, CopyStatus.AVAILABLE)
+
+    due_date = (date.today() + timedelta(days=14)).isoformat()
+    client.post("/loans", json={"member_id": member.id, "copy_id": open_copy.id, "due_date": due_date})
+    returned_loan_id = client.post(
+        "/loans", json={"member_id": member.id, "copy_id": returned_copy.id, "due_date": due_date}
+    ).json()["id"]
+    client.put(f"/loans/{returned_loan_id}/return")
+
+    response = client.get("/loans", params={"open": True})
+    assert response.status_code == 200
+    results = response.json()
+    assert len(results) == 1
+    assert results[0]["copy_id"] == open_copy.id
+
+    response = client.get("/loans")
+    assert response.status_code == 200
+    assert len(response.json()) == 2

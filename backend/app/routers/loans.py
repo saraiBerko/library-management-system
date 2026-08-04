@@ -9,6 +9,11 @@ from app.schemas.loan import LoanCreate, LoanRead
 router = APIRouter(prefix="/loans", tags=["loans"])
 
 
+@router.get("", response_model=list[LoanRead])
+def list_loans(open: bool | None = None, db: Session = Depends(get_db)):
+    return crud.loan.list_loans(db, open=open)
+
+
 @router.post("", response_model=LoanRead, status_code=201)
 def create_loan(loan_in: LoanCreate, db: Session = Depends(get_db)):
     try:

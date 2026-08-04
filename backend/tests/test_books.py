@@ -15,11 +15,11 @@ def _make_book(db_session, title, year, genre, author_names, statuses):
     return book
 
 
-def test_search_by_title(client, db_session):
+def test_search_by_q_matches_title(client, db_session):
     _make_book(db_session, "Dune", 1965, "Science Fiction", ["Frank Herbert"], [CopyStatus.AVAILABLE])
     _make_book(db_session, "The Hobbit", 1937, "Fantasy", ["J.R.R. Tolkien"], [CopyStatus.AVAILABLE])
 
-    response = client.get("/books", params={"title": "dune"})
+    response = client.get("/books", params={"q": "dune"})
     assert response.status_code == 200
     results = response.json()
     assert len(results) == 1
@@ -39,12 +39,13 @@ def test_search_by_genre(client, db_session):
     assert results[0]["title"] == "The Hobbit"
 
 
-def test_search_by_author(client, db_session):
+def test_search_by_q_matches_author(client, db_session):
     _make_book(
         db_session, "Good Omens", 1990, "Fantasy", ["Neil Gaiman", "Terry Pratchett"], [CopyStatus.AVAILABLE]
     )
+    _make_book(db_session, "Dune", 1965, "Science Fiction", ["Frank Herbert"], [CopyStatus.AVAILABLE])
 
-    response = client.get("/books", params={"author": "pratchett"})
+    response = client.get("/books", params={"q": "pratchett"})
     assert response.status_code == 200
     results = response.json()
     assert len(results) == 1

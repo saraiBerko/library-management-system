@@ -47,3 +47,18 @@ def test_member_loan_history_includes_open_and_returned(client, db_session):
 def test_member_loans_missing_member_returns_404(client):
     response = client.get("/members/999/loans")
     assert response.status_code == 404
+
+
+def test_list_members_returns_all_ordered_by_name(client, db_session):
+    db_session.add_all(
+        [
+            Member(name="Zoe Adler", email="zoe@example.com", join_date=date(2023, 1, 1), is_active=True),
+            Member(name="Amir Baz", email="amir@example.com", join_date=date(2023, 1, 1), is_active=False),
+        ]
+    )
+    db_session.commit()
+
+    response = client.get("/members")
+    assert response.status_code == 200
+    names = [member["name"] for member in response.json()]
+    assert names == ["Amir Baz", "Zoe Adler"]

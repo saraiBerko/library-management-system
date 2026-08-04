@@ -12,19 +12,20 @@ def _count_available(book: Book) -> int:
 
 def search_books(
     db: Session,
-    title: str | None = None,
+    q: str | None = None,
     genre: str | None = None,
-    author: str | None = None,
     available: bool | None = None,
 ) -> list[tuple[Book, int]]:
     query = select(Book).options(selectinload(Book.authors), selectinload(Book.copies))
 
-    if title:
-        query = query.where(Book.title.ilike(f"%{title}%"))
+    if q:
+        # Single free-text field matches title OR author name (see Part ג plan) —
+        # separate ANDed title/author params couldn't express "either field".
+        query = query.where(
+            Book.title.ilike(f"%{q}%") | Book.authors.any(Author.name.ilike(f"%{q}%"))
+        )
     if genre:
         query = query.where(func.lower(Book.genre) == genre.lower())
-    if author:
-        query = query.where(Book.authors.any(Author.name.ilike(f"%{author}%")))
     if available is not None:
         has_available_copy = Book.copies.any(Copy.status == CopyStatus.AVAILABLE)
         query = query.where(has_available_copy if available else ~has_available_copy)

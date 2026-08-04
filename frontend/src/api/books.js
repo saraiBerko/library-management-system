@@ -1,13 +1,9 @@
 import { apiClient } from './client'
 
-export function getBooks() {
-  return apiClient.get('/books').then((res) => res.data)
+export function searchBooks(params = {}) {
+  return apiClient.get('/books', { params }).then((res) => res.data)
 }
 
-export function createBook(book) {
-  return apiClient.post('/books', book).then((res) => res.data)
-}
-
-export function deleteBook(id) {
-  return apiClient.delete(`/books/${id}`)
+export function getBook(id) {
+  return apiClient.get(`/books/${id}`).then((res) => res.data)
 }

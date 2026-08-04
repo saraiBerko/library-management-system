@@ -62,6 +62,15 @@ def return_loan(db: Session, loan_id: int) -> Loan:
     return loan
 
 
+def list_loans(db: Session, open: bool | None = None) -> list[Loan]:
+    query = select(Loan).options(
+        selectinload(Loan.copy).selectinload(Copy.book), selectinload(Loan.member)
+    )
+    if open:
+        query = query.where(Loan.returned_date.is_(None))
+    return list(db.scalars(query.order_by(Loan.due_date)))
+
+
 def get_overdue_loans(db: Session) -> list[Loan]:
     query = (
         select(Loan)

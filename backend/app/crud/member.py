@@ -10,6 +10,10 @@ def get_member(db: Session, member_id: int) -> Member | None:
     return db.get(Member, member_id)
 
 
+def list_members(db: Session) -> list[Member]:
+    return list(db.scalars(select(Member).order_by(Member.name)))
+
+
 def get_member_loans(db: Session, member_id: int) -> list[Loan]:
     query = (
         select(Loan)
