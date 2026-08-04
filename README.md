@@ -6,7 +6,7 @@ A library management system: books with multiple authors, physical copies, membe
 
 - **Docker** with the Compose plugin (Docker Desktop on Mac/Windows, or Docker Engine + `docker-compose-plugin` on Linux). This is the only hard requirement — the instructions below assume it's the only thing installed.
 
-Running the backend or frontend outside Docker is also possible (see `CLAUDE.md`) but needs Python 3.12, Node 20, and a local PostgreSQL instance — not required for the steps below.
+Running the backend or frontend outside Docker is also possible, but needs Python 3.12, Node 20, and a local PostgreSQL instance — not required for the steps below.
 
 ## Getting started
 
@@ -28,6 +28,12 @@ Then open:
 
 - Frontend: http://localhost:5173
 - API: http://localhost:8000 (interactive docs at http://localhost:8000/docs)
+
+## Configuration
+
+Configuration is environment-variable based. `.env.example` lists the configurable variables: `DATABASE_URL` (backend, Postgres connection string), `CORS_ORIGINS` (backend, allowed frontend origins), and `VITE_API_URL` (frontend, where the browser sends API requests). `docker-compose.yml` already sets sensible defaults for all three, so no `.env` file is needed to run `docker compose up --build`.
+
+The backend's port is also configurable independently via `PORT`, honored by the Dockerfile's `CMD` (e.g. `docker run -e PORT=9000 ...`) — separate from Compose's own host-port mapping.
 
 ## Troubleshooting
 
