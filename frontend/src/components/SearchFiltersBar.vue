@@ -11,6 +11,13 @@ const genre = defineModel('genre', { default: '' })
 const availableOnly = defineModel('availableOnly', { default: false })
 
 const emit = defineEmits(['search'])
+
+function resetFilters() {
+  q.value = ''
+  genre.value = ''
+  availableOnly.value = false
+  emit('search')
+}
 </script>
 
 <template>
@@ -25,6 +32,7 @@ const emit = defineEmits(['search'])
       Available only
     </label>
     <button type="submit">Search</button>
+    <button type="button" @click="resetFilters">Reset</button>
   </form>
 </template>
 

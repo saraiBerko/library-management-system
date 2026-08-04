@@ -36,6 +36,6 @@ const emit = defineEmits(['select-book'])
 }
 
 .clickable-row:hover {
-  background: var(--color-bg);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
 }
 </style>
