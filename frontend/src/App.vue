@@ -15,20 +15,35 @@
 
 <style scoped>
 header {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-6);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+h1 {
+  margin: 0;
 }
 
 nav {
   display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-3);
 }
 
 nav a {
   text-decoration: none;
+  color: var(--color-text-muted);
+  padding-bottom: var(--spacing-1);
+  border-bottom: 2px solid transparent;
+}
+
+nav a:hover {
+  color: var(--color-text);
 }
 
 nav a.router-link-active {
-  font-weight: bold;
+  color: var(--color-primary);
+  font-weight: 600;
+  border-bottom-color: var(--color-primary);
 }
 </style>

@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBooksStore } from '../stores/books'
 import ErrorBanner from '../components/ErrorBanner.vue'
+import SearchFiltersBar from '../components/SearchFiltersBar.vue'
+import BookResultsTable from '../components/BookResultsTable.vue'
 
 const router = useRouter()
 const booksStore = useBooksStore()
@@ -32,70 +34,11 @@ onMounted(async () => {
 
 <template>
   <section>
-    <form @submit.prevent="runSearch">
-      <input v-model="q" placeholder="Search by title or author" />
-      <select v-model="genre">
-        <option value="">All genres</option>
-        <option v-for="g in allGenres" :key="g" :value="g">{{ g }}</option>
-      </select>
-      <label>
-        <input v-model="availableOnly" type="checkbox" />
-        Available only
-      </label>
-      <button type="submit">Search</button>
-    </form>
+    <SearchFiltersBar v-model:q="q" v-model:genre="genre" v-model:available-only="availableOnly" :genres="allGenres" @search="runSearch" />
 
     <ErrorBanner :message="booksStore.error" />
     <p v-if="booksStore.loading">Loading...</p>
-
-    <table v-else-if="booksStore.results.length">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Author(s)</th>
-          <th>Year</th>
-          <th>Available copies</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="book in booksStore.results" :key="book.id" class="clickable-row" @click="openBook(book.id)">
-          <td>{{ book.title }}</td>
-          <td>{{ book.authors.map((a) => a.name).join(', ') }}</td>
-          <td>{{ book.publication_year }}</td>
-          <td>{{ book.available_copies }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <BookResultsTable v-else-if="booksStore.results.length" :books="booksStore.results" @select-book="openBook" />
     <p v-else>No books found.</p>
   </section>
 </template>
-
-<style scoped>
-form {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th,
-td {
-  text-align: left;
-  padding: 0.5rem;
-  border-bottom: 1px solid #ddd;
-}
-
-.clickable-row {
-  cursor: pointer;
-}
-
-.clickable-row:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-</style>

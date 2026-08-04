@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { useBooksStore } from '../stores/books'
 import ErrorBanner from '../components/ErrorBanner.vue'
+import CopyList from '../components/CopyList.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -38,27 +39,9 @@ function goToLoanForm() {
       <p>Genre: {{ booksStore.currentBook.genre }}</p>
 
       <h3>Copies</h3>
-      <ul>
-        <li v-for="copy in booksStore.currentBook.copies" :key="copy.id">
-          Copy #{{ copy.id }} — <span :class="`status-${copy.status}`">{{ copy.status }}</span>
-        </li>
-      </ul>
+      <CopyList :copies="booksStore.currentBook.copies" />
 
       <button :disabled="!firstAvailableCopy" @click="goToLoanForm">Loan</button>
     </div>
   </section>
 </template>
-
-<style scoped>
-.status-available {
-  color: #1a7f37;
-}
-
-.status-loaned {
-  color: #9a6700;
-}
-
-.status-lost {
-  color: #b3261e;
-}
-</style>

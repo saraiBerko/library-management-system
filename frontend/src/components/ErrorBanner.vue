@@ -13,10 +13,11 @@ defineProps({
 
 <style scoped>
 .error-banner {
-  background: #fdecea;
-  color: #b3261e;
-  border: 1px solid #f5c6c2;
-  border-radius: 4px;
-  padding: 0.5rem 0.75rem;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  padding: var(--spacing-2) var(--spacing-3);
+  margin-bottom: var(--spacing-4);
 }
 </style>
