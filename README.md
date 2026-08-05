@@ -65,7 +65,7 @@ docker compose exec backend pytest
 
 Beyond the assignment's 6 required endpoints, two small additional ones exist: `GET /members` (lists all members, needed for the member picker on the loan-management screen) and `GET /loans?open=true` (lists every open loan across all members, needed for that screen's open-loans table — `GET /reports/overdue` only covers the subset that's already overdue).
 
-**Frontend** (`frontend/src/`) is Vue 3 with Vue Router (3 screens under `views/`) and Pinia (`stores/`) — components never call the API directly; each store owns its slice of state and the `api/*.js` calls that populate it, giving one consistent loading/error-handling path across the app.
+**Frontend** (`frontend/src/`) is Vue 3 with Vue Router (3 screens under `views/`) and Pinia (`stores/`) — components never call the API directly; each store owns its slice of state and the `api/*.js` calls that populate it, giving one consistent loading/error-handling path across the app. The three `views/` files are thin entry points that own store wiring and compose presentational components from `components/` (`SearchFiltersBar`, `BookResultsTable`, `CopyList`, `NewLoanForm`, `OpenLoansTable`), which are strictly props-in/events-out and never touch the store or API directly.
 
 **Database**: PostgreSQL. `Book`s and `Author`s are many-to-many via a `book_authors` join table; a `Copy` is a physical instance of a `Book` and is only ever linked to a `Member` indirectly, through a `Loan` — there's no direct copy-to-member reference anywhere in the schema.
 
@@ -76,3 +76,13 @@ Inside Docker Compose, services reach each other by service name (the backend's 
 - `backend/sql/queries.sql` — four standalone analytical SQL queries (books with no available copies, top 5 borrowers in the last year, books unborrowed in 12 months, average loan duration by genre), independent of the ORM.
 - `backend/alembic/versions/` — the schema migration.
 - `backend/app/seed.py` — the seed script described above.
+
+## Future improvements at larger scale
+
+The following were deliberately left out of scope for this assignment, not gaps — at meaningfully larger scale, this is what would be added:
+
+- Pagination on `GET /books`, `GET /members`, and `GET /loans`.
+- An async DB driver (`asyncpg` + async SQLAlchemy) in place of the current sync `psycopg2` setup, for higher-concurrency throughput.
+- A caching layer for hot reads.
+- API versioning.
+- Structured logging and observability.
